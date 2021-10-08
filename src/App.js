@@ -18,21 +18,39 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
 
-  const nameChangeHandler = (e) => {
+  const auth = getAuth();
+
+  /* const nameChangeHandler = (e) => {
     setName(e.target.value);
-  };
+  }; */
   const emailChangeHandler = (e) => {
     setEmail(e.target.value);
   };
-
   const passwordChangeHandler = (e) => {
     setPassword(e.target.value);
   };
 
   const registrationHandler = (e) => {
     e.preventDefault();
-    console.log("Preventing page reload from the FORM List's submit hitting.");
+    // console.log(name);
+    console.log(email);
+    console.log(password);
+    /*console.log("Preventing page reload from the FORM List's submit hitting.");*/
+    registerNewUser(email, password);
+
+  };
+
+  const registerNewUser = (email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
   return (
@@ -43,16 +61,19 @@ function App() {
           {/* Name Field */}
           <Form.Group className="mb-3 mt-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
-            <Form.Control onBlur={nameChangeHandler} placeholder="First name" />
+            <Form.Control
+              /* onBlur={nameChangeHandler} */
+              placeholder="Enter Full Name"
+            />
           </Form.Group>
 
           {/* Email Field */}
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
+            <Form.Label>Email</Form.Label>
             <Form.Control
               onBlur={emailChangeHandler}
               type="email"
-              placeholder="Enter email"
+              placeholder="Enter Email"
             />
           </Form.Group>
 
