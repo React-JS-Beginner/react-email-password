@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
@@ -15,6 +16,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLogin, setIsLogin] = useState(false);
 
   const auth = getAuth();
 
@@ -35,10 +37,14 @@ function App() {
     console.log(email);
     console.log(password);
     /*console.log("Preventing page reload from the FORM List's submit hitting.");*/
-    registerNewUser(email, password);
+    if (isLogin) {
+      processLogin(email, password);
+    } else {
+      registerNewUser(email, password);
+    }
   };
 
-  //createUserWithEmailAndPassword Mechanism
+  //Create New User Mechanism
   const registerNewUser = (email, password) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
@@ -53,31 +59,56 @@ function App() {
       });
   };
 
-  //updateProfile Mechanism
+  //Update User Name Mechanism
   const userName = () => {
     updateProfile(auth.currentUser, { displayName: name }).then((result) => {});
   };
 
-  //sendEmailVerification Mechanism
+  //Email Verification Mechanism
   const verifyEmail = () => {
     sendEmailVerification(auth.currentUser).then((result) => {
       console.log(result);
     });
   };
 
+  //LOG IN Process
+  const processLogin = (email, password) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        setError("");
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+  };
+
+  //Toggle CheckBox
+  const toggleLogin = (e) => {
+    setIsLogin(e.target.checked);
+  };
+
   return (
     <div>
       <Container className="mt-5 pt-5 w-25">
-        <p className="text-primary fs-1">Registration Form</p>
+        <p className="text-primary fs-1">
+          {isLogin ? "Sign In" : "Registration Form"}
+        </p>
         <Form onSubmit={registrationHandler}>
-          {/* Name Field */}
-          <Form.Group className="mb-3 mt-3" controlId="formBasicName">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              onBlur={nameBlurHandler}
-              placeholder="Enter Full Name"
-            />
-          </Form.Group>
+          {/* Changing Name field display */}
+          {!isLogin && (
+            <div>
+              {/* Name Field */}
+              <Form.Group className="mb-3 mt-3" controlId="formBasicName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  onBlur={nameBlurHandler}
+                  placeholder="Enter Full Name"
+                />
+              </Form.Group>
+            </div>
+          )}
 
           {/* Email Field */}
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -101,7 +132,12 @@ function App() {
 
           {/* Checkbox */}
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check type="checkbox" label="Check me out" />
+            <Form.Check
+              onChange={toggleLogin}
+              type="checkbox"
+              //Changing CheckBox Comment
+              label={!isLogin ? "Already have an account?" : "Let's Go"}
+            />
           </Form.Group>
 
           {/* Display Error */}
@@ -109,7 +145,7 @@ function App() {
 
           {/* Register Button */}
           <Button variant="primary" type="submit">
-            Register
+            {isLogin ? "Login" : "Register"}
           </Button>
         </Form>
       </Container>
