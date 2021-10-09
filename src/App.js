@@ -1,12 +1,8 @@
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  /* 
-  signInWithEmailAndPassword,
+  updateProfile,
   sendEmailVerification,
-  sendPasswordResetEmail,
-  updateProfile, 
-  */
 } from "firebase/auth";
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
@@ -18,39 +14,55 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const auth = getAuth();
 
-  /* const nameChangeHandler = (e) => {
+  const nameBlurHandler = (e) => {
     setName(e.target.value);
-  }; */
-  const emailChangeHandler = (e) => {
+  };
+  const emailBlurHandler = (e) => {
     setEmail(e.target.value);
   };
-  const passwordChangeHandler = (e) => {
+  const passwordBlurHandler = (e) => {
     setPassword(e.target.value);
   };
 
+  //Form Handler
   const registrationHandler = (e) => {
     e.preventDefault();
-    // console.log(name);
+    console.log(name);
     console.log(email);
     console.log(password);
     /*console.log("Preventing page reload from the FORM List's submit hitting.");*/
     registerNewUser(email, password);
-
   };
 
+  //createUserWithEmailAndPassword Mechanism
   const registerNewUser = (email, password) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         const user = result.user;
         console.log(user);
+        setError(""); //To clear the previous error
+        userName();
+        verifyEmail();
       })
       .catch((error) => {
         setError(error.message);
       });
+  };
+
+  //updateProfile Mechanism
+  const userName = () => {
+    updateProfile(auth.currentUser, { displayName: name }).then((result) => {});
+  };
+
+  //sendEmailVerification Mechanism
+  const verifyEmail = () => {
+    sendEmailVerification(auth.currentUser).then((result) => {
+      console.log(result);
+    });
   };
 
   return (
@@ -62,7 +74,7 @@ function App() {
           <Form.Group className="mb-3 mt-3" controlId="formBasicName">
             <Form.Label>Name</Form.Label>
             <Form.Control
-              /* onBlur={nameChangeHandler} */
+              onBlur={nameBlurHandler}
               placeholder="Enter Full Name"
             />
           </Form.Group>
@@ -71,7 +83,7 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control
-              onBlur={emailChangeHandler}
+              onBlur={emailBlurHandler}
               type="email"
               placeholder="Enter Email"
             />
@@ -81,7 +93,7 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control
-              onBlur={passwordChangeHandler}
+              onBlur={passwordBlurHandler}
               type="password"
               placeholder="Password"
             />
@@ -91,6 +103,9 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
             <Form.Check type="checkbox" label="Check me out" />
           </Form.Group>
+
+          {/* Display Error */}
+          <p className="text-danger">{error}</p>
 
           {/* Register Button */}
           <Button variant="primary" type="submit">
