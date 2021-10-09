@@ -4,6 +4,7 @@ import {
   updateProfile,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
@@ -89,6 +90,11 @@ function App() {
     setIsLogin(e.target.checked);
   };
 
+  //Reset Password
+  const resetPasswordHandler = () => {
+    sendPasswordResetEmail(auth, email).then((result) => {});
+  };
+
   return (
     <div>
       <Container className="mt-5 pt-5 w-25">
@@ -147,6 +153,21 @@ function App() {
           <Button variant="primary" type="submit">
             {isLogin ? "Login" : "Register"}
           </Button>
+          <br />
+          <br />
+          {isLogin && (
+            <div className="d-flex align-items-center">
+              <div>
+                Forget Password ?
+              </div>{" "}
+              &nbsp; &nbsp;
+              <div>
+                <Button onClick={resetPasswordHandler} variant="outline-primary" size="sm">
+                  Reset
+                </Button>
+              </div>
+            </div>
+          )}
         </Form>
       </Container>
     </div>
