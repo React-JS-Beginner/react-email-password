@@ -1,4 +1,4 @@
-import { 
+import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
@@ -17,6 +17,8 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  //By default(false) don't display SignIN at the initial state of UI
   const [isLogin, setIsLogin] = useState(false);
 
   const auth = getAuth();
@@ -34,10 +36,24 @@ function App() {
   //Form Handler
   const registrationHandler = (e) => {
     e.preventDefault();
+    /*console.log("Preventing page reload from the FORM List's submit hitting.");*/
     console.log(name);
     console.log(email);
     console.log(password);
-    /*console.log("Preventing page reload from the FORM List's submit hitting.");*/
+
+    /* 
+    //You can also set your password format according to your need
+
+    if (password.length < 6) {
+      setError('Password Must be at least 6 characters long.')
+      return;
+    }
+    if (!/(?=.*[A-Z].*[A-Z])/.test(password)) {
+      setError('Password Must contain 2 upper case');
+      return;
+    } 
+    */
+
     if (isLogin) {
       processLogin(email, password);
     } else {
@@ -88,6 +104,7 @@ function App() {
   //Toggle CheckBox
   const toggleLogin = (e) => {
     setIsLogin(e.target.checked);
+    //Checked True/False in console by Ticking
   };
 
   //Reset Password
@@ -157,12 +174,13 @@ function App() {
           <br />
           {isLogin && (
             <div className="d-flex align-items-center">
+              <div>Forget Password ?</div> &nbsp; &nbsp;
               <div>
-                Forget Password ?
-              </div>{" "}
-              &nbsp; &nbsp;
-              <div>
-                <Button onClick={resetPasswordHandler} variant="outline-primary" size="sm">
+                <Button
+                  onClick={resetPasswordHandler}
+                  variant="outline-primary"
+                  size="sm"
+                >
                   Reset
                 </Button>
               </div>
